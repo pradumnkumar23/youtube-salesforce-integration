@@ -1,0 +1,102 @@
+<template>
+
+    <!-- Search -->
+    <lightning-card title="YouTube Search">
+
+        <div class="slds-p-around_medium">
+
+            <lightning-input
+                label="Search"
+                value={searchKey}
+                onchange={handleChange}>
+            </lightning-input>
+
+            <lightning-button
+                label="Search"
+                variant="brand"
+                onclick={searchVideos}
+                class="slds-m-top_small">
+            </lightning-button>
+
+        </div>
+
+      <template if:true={showPlayer}>
+
+    <div class="player-header">
+
+        <lightning-button-icon
+
+            icon-name="utility:close"
+
+            alternative-text="Close"
+
+            onclick={closePlayer}>
+
+        </lightning-button-icon>
+
+    </div>
+
+    <c-youtube-player
+        video-id={selectedVideoId}>
+    </c-youtube-player>
+
+</template>
+
+<!-- Playlist -->
+<template if:true={videos}>
+
+    <template for:each={videos} for:item="video">
+
+        <div
+            key={video.videoId}
+            class="video-card"
+            data-id={video.videoId}
+            onclick={playVideo}>
+
+            <img
+                src={video.thumbnail}
+                alt={video.title}
+                class="thumbnail"/>
+
+            <div class="video-info">
+
+                <h3>{video.title}</h3>
+
+                <p>{video.channelTitle}</p>
+
+                <p>{video.description}</p>
+
+            </div>
+
+        </div>
+
+    </template>
+
+</template>
+
+
+<template if:true={suggestions}>
+
+    <div class="suggestion-box">
+
+        <template for:each={suggestions} for:item="item">
+
+            <div
+                key={item}
+                class="suggestion"
+                data-value={item}
+                onclick={selectSuggestion}>
+
+                🔍 {item}
+
+            </div>
+
+        </template>
+
+    </div>
+
+</template>
+
+
+ </lightning-card>
+</template>
