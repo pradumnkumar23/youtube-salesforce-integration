@@ -1,19 +1,355 @@
-# Salesforce DX Project
+# 🎥 YouTube Integration with Salesforce
 
-Salesforce DX is a development approach that brings source-driven development, team collaboration, and continuous integration to the Salesforce Platform. Instead of working directly in an org through a web browser, you work with metadata as source files in a local DX project, track changes in version control, and deploy through automated processes.
+A Salesforce Lightning Web Component (LWC) application that integrates with the YouTube Data API to allow users to search for YouTube videos directly from Salesforce and watch the selected video within the Salesforce interface.
 
-This project template gets you started with the tools and structure you need to build Salesforce applications using source control, scratch orgs, and the Salesforce CLI.
+The project demonstrates how Salesforce can consume an external REST API using Apex, securely manage API configuration, and present external data through a modern Lightning Web Component UI.
 
-## Prerequisites
+---
 
-Before you start, make sure you have:
+## 🚀 Features
 
-- **Salesforce CLI** - Download from [developer.salesforce.com/tools/salesforcecli](https://developer.salesforce.com/tools/salesforcecli). See [Install Salesforce CLI](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_install_cli.htm) for details.
-- **VS Code with Salesforce Extension Pack** - See [Installation Instructions](https://developer.salesforce.com/docs/platform/sfvscode-extensions/guide/install.html) for details. Includes the Agentforce Vibes extension.
-- **A development org** - Sign up for a free Developer Edition org [here](https://developer.salesforce.com/signup).
-- **Dev Hub enabled** (optional, required to create scratch orgs) - You can enable Dev Hub in your development org under Setup > Dev Hub.  See [Provide Developers Access to Salesforce DX Tools](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_setup_dx_tools.htm).
+* 🔎 Search YouTube videos directly from Salesforce
+* 🎬 Display YouTube video search results in an interactive Lightning UI
+* ▶️ Play the selected video without leaving Salesforce
+* 🔗 Integrate Salesforce with the YouTube Data API using Apex callouts
+* 🔐 Store API configuration securely using Salesforce configuration metadata
+* ⚡ Use Lightning Web Components for a responsive user experience
+* 🧩 Separate UI, server-side logic, and configuration concerns
+* 📦 Built using Salesforce DX source-driven development
 
-## Project Structure
+---
+
+## 🏗️ Architecture
+
+```text
+                 ┌──────────────────────┐
+                 │     Salesforce UI    │
+                 │       LWC            │
+                 └──────────┬───────────┘
+                            │
+                            │ Search Keyword
+                            ▼
+                 ┌──────────────────────┐
+                 │      Apex Class      │
+                 │   Server-side Logic  │
+                 └──────────┬───────────┘
+                            │
+                            │ HTTP Callout
+                            ▼
+                 ┌──────────────────────┐
+                 │    YouTube Data API  │
+                 └──────────┬───────────┘
+                            │
+                            │ JSON Response
+                            ▼
+                 ┌──────────────────────┐
+                 │      Apex Class      │
+                 │ Parse API Response   │
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │         LWC          │
+                 │ Display Video Results│
+                 └──────────┬───────────┘
+                            │
+                            ▼
+                 ┌──────────────────────┐
+                 │    YouTube Player    │
+                 │    Selected Video    │
+                 └──────────────────────┘
+```
+
+---
+
+## 🛠️ Technology Stack
+
+| Technology               | Purpose                            |
+| ------------------------ | ---------------------------------- |
+| Salesforce               | Application platform               |
+| Lightning Web Components | User interface                     |
+| Apex                     | Server-side logic and API callouts |
+| SOQL                     | Salesforce data access             |
+| YouTube Data API         | External video search              |
+| Named Credential         | External API endpoint management   |
+| Custom Metadata          | API configuration                  |
+| Salesforce CLI           | Development and deployment         |
+| VS Code                  | Development environment            |
+| Git & GitHub             | Version control                    |
+
+---
+
+## 📂 Salesforce Components
+
+### Lightning Web Components
+
+The application is divided into reusable LWC components responsible for:
+
+* Searching YouTube videos
+* Displaying search results
+* Selecting a video
+* Rendering the YouTube player
+* Managing the user interaction and component state
+
+### Apex
+
+Apex is responsible for:
+
+* Preparing the YouTube API request
+* Performing the HTTP callout
+* Handling the API response
+* Parsing JSON data
+* Returning video information to the LWC
+
+### Configuration
+
+External API configuration is separated from the application logic to avoid hardcoding configuration values directly inside Apex.
+
+---
+
+## 🔌 YouTube API Integration
+
+The application uses the **YouTube Data API** to retrieve video search results.
+
+A typical request contains parameters such as:
+
+```text
+part=snippet
+type=video
+maxResults=10
+q=<search keyword>
+```
+
+The user's search keyword is URL encoded before being included in the request.
+
+The API response contains video metadata such as:
+
+* Video ID
+* Title
+* Description
+* Thumbnail
+* Channel information
+* Published date
+
+The response is then parsed in Apex and returned to the Lightning Web Component.
+
+---
+
+## 🔐 API Configuration
+
+The project keeps the external API configuration outside of the core Apex logic.
+
+### Configuration approach
+
+1. Create the required YouTube API configuration.
+2. Configure the Salesforce external endpoint.
+3. Store the API configuration in Salesforce configuration metadata.
+4. Reference the configuration from Apex.
+5. Use the configured endpoint for the HTTP callout.
+
+> ⚠️ Never commit an actual API key, secret, password, or authentication token to GitHub.
+
+For local development, configure your own YouTube API credentials in your Salesforce environment.
+
+---
+
+## ⚙️ How It Works
+
+### 1. User enters a search keyword
+
+The user enters a keyword such as:
+
+```text
+Salesforce LWC
+```
+
+### 2. LWC sends the request
+
+The Lightning Web Component invokes the Apex method with the search keyword.
+
+### 3. Apex prepares the API request
+
+Apex constructs the YouTube API request and performs the HTTP callout.
+
+### 4. YouTube returns JSON
+
+The YouTube API returns video search results.
+
+### 5. Apex processes the response
+
+Apex parses the response and extracts the required video information.
+
+### 6. LWC displays the results
+
+The LWC renders the returned videos with their thumbnails and titles.
+
+### 7. User selects a video
+
+When the user selects a video, the video ID is passed to the player component.
+
+### 8. Video plays inside Salesforce
+
+The selected YouTube video is displayed directly within the Salesforce interface.
+
+---
+
+## 📁 Project Structure
+
+```text
+force-app/
+└── main/
+    └── default/
+        ├── classes/
+        │   ├── Apex Classes
+        │   └── Test Classes
+        │
+        ├── lwc/
+        │   ├── youtubeSearch/
+        │   └── youtubePlayer/
+        │
+        └── customMetadata/
+            └── YouTube Configuration
+
+config/
+scripts/
+manifest/
+sfdx-project.json
+```
+
+---
+
+## 💻 Setup
+
+### Prerequisites
+
+* Salesforce Developer Org
+* Salesforce CLI
+* VS Code
+* Salesforce Extension Pack
+* YouTube Data API access
+* Git
+
+### Clone the repository
+
+```bash
+git clone https://github.com/pradumnkumar23/youtube-salesforce-integration.git
+cd youtube-salesforce-integration
+```
+
+### Authorize your Salesforce org
+
+```bash
+sf org login web
+```
+
+### Deploy the project
+
+```bash
+sf project deploy start
+```
+
+After deployment, configure the required YouTube API settings in your Salesforce org.
+
+---
+
+## 🧪 Testing
+
+Apex test classes should validate:
+
+* Successful YouTube API responses
+* API error responses
+* Empty search results
+* Multiple search results
+* Callout behavior
+* Apex-to-LWC data flow
+
+HTTP callouts should be tested using `HttpCalloutMock` rather than making real API requests from test methods.
+
+---
+
+## 🔒 Security Considerations
+
+* Do not hardcode API keys in Apex.
+* Do not commit secrets to GitHub.
+* Keep external API configuration separate from business logic.
+* Use Salesforce-supported authentication and endpoint configuration mechanisms.
+* Validate and URL-encode user-provided search parameters.
+* Use test mocks for external API callouts.
+
+---
+
+## 📸 Screenshots
+
+*Add screenshots of the application here.*
+
+Suggested screenshots:
+
+1. YouTube search interface
+2. Search results
+3. Selected video player
+4. Salesforce configuration
+5. Project architecture
+
+Example:
+
+```text
+docs/
+└── images/
+    ├── search-screen.png
+    ├── search-results.png
+    └── video-player.png
+```
+
+---
+
+## 🔮 Future Enhancements
+
+* Add YouTube playlist support
+* Add pagination for search results
+* Add video category filters
+* Add search history
+* Add favorites/bookmarks
+* Improve error handling and user notifications
+* Add loading states and skeleton UI
+* Add Jest tests for LWC components
+* Add automated CI/CD deployment using GitHub Actions
+
+---
+
+## 🎯 What This Project Demonstrates
+
+This project demonstrates practical Salesforce development skills including:
+
+* Lightning Web Components
+* Apex development
+* REST API integration
+* HTTP callouts
+* External API consumption
+* Named Credential usage
+* Custom Metadata configuration
+* JSON parsing
+* Component-based UI development
+* Salesforce DX
+* Git/GitHub version control
+* Secure configuration management
+* Testable integration architecture
+
+---
+
+## 👨‍💻 Author
+
+**Pradumn Kumar**
+
+Salesforce Developer
+
+GitHub: [@pradumnkumar23](https://github.com/pradumnkumar23)
+
+---
+
+## 📄 License
+
+This project is intended for learning, demonstration, and portfolio purposes.
+
 
 Your DX project follows this structure:
 
